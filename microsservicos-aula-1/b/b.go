@@ -27,11 +27,23 @@ func home(w http.ResponseWriter, r *http.Request) {
 	result := Result{Status: "declined"}
 
 	if ccNumber == "1" {
-		result.Status = "approved"
+		result.Status = "approved" 
 	}
 
-	if resultCoupon.Status == "invalid" {
-		result.Status = "invalid coupon"
+	if resultCoupon.Status != "valid" && result.Status != "approved" {
+		result.Status = "invalid coupon and card"
+	}
+	if resultCoupon.Status == "valid" && result.Status != "approved" {
+		result.Status = "Invalid card but valid coupon"
+	}
+	if resultCoupon.Status == "invalid" && result.Status == "approved" {
+		result.Status = "Valid card but invalid coupon"
+	}
+	if resultCoupon.Status == "valid" && result.Status == "approved" {
+		result.Status = "Valid card and coupon"
+	}
+	if resultCoupon.Status == "cashback" {
+		result.Status = "valid! and you got cashback! Wowzers!"
 	}
 
 	jsonData, err := json.Marshal(result)

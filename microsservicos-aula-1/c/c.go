@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -45,7 +46,13 @@ func home(w http.ResponseWriter, r *http.Request) {
 	coupon := r.PostFormValue("coupon")
 	valid := coupons.Check(coupon)
 
+	resultCashback := makeHttpCall("http://localhost:9093", coupon)
+
 	result := Result{Status: valid}
+
+	if resultCashback.Status == "lucky" {
+		result.Status = "cashback"
+	}
 
 	jsonResult, err := json.Marshal(result)
 	if err != nil {
@@ -53,5 +60,28 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, string(jsonResult))
+
+}
+
+func makeHttpCall(urlMicroservice string, coupon string) Result {
+
+	res, err := http.PostForm(urlMicroservice, nil)
+	if err != nil {
+		result := Result{Status: "Servidor fora do ar!"}
+		return result
+	}
+
+	defer res.Body.Close()
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal("Error processing result")
+	}
+
+	result := Result{}
+
+	json.Unmarshal(data, &result)
+
+	return result
 
 }
