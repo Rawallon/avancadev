@@ -15,6 +15,6 @@
 ## Processed
 ![Processed](prints/processed.png)
 ## Cupom inválido
-![Cupom inválido](prints/invalido.png)
+![Cupom inválido](prints/Invalido.png)
 ## Connection error
 ![Connection error](prints/connection.png)
